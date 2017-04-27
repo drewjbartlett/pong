@@ -1,7 +1,7 @@
-import Canvas from './Canvas';
+// GameHandler
 
-let gameCanvas;
+export default class {
+    constructor () {
 
-window.onload = function () {
-    gameCanvas = new Canvas('gameCanvas');
-};
+    }
+}
