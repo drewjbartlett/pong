@@ -4,10 +4,6 @@ export default class {
     constructor (canvas) {
         this.canvas = canvas;
 
-        this.run();
-    }
-
-    run () {
         this.draw();
     }
 
@@ -19,13 +15,25 @@ export default class {
     }
 
     reset () {
+        if (GameState.leader && GameState.leader.score >= GameState.settings.winningScore) {
+            GameState.showingWinScreen = true;
+            this.canvas.clearCanvas();
+        }
+
         this.reverseBallSpeed();
         GameState.ball.x = this.canvas.el.width / 2;
         GameState.ball.y = this.canvas.el.height / 2;
     }
 
-    reverseBallSpeed () {
-        GameState.settings.ball.speed.x = -GameState.settings.ball.speed.x;
+    reverseBallSpeed (position = 'x') {
+        GameState.settings.ball.speed[position] = -GameState.settings.ball.speed[position];
+
+        return this;
+    }
+
+    setDeltaSpeedForPaddle (paddle) {
+        paddle = `${paddle}Paddle`;
+        GameState.settings.ball.speed.y = GameState.ball.delta.ySpeed;
     }
 
     collisionWithPaddle (paddle) {
@@ -37,6 +45,8 @@ export default class {
             leftPaddle: GameState.ball.x <= (GameState[paddle].x + GameState[paddle].width),
             rightPaddle: GameState.ball.x >= (GameState[paddle].x - GameState[paddle].width)
         };
+
+        GameState.ball.delta.y = GameState.ball.y - (GameState[paddle].y + GameState[paddle].height / 2);
 
         if (paddleConditions[paddle] &&
             GameState.ball.y > GameState[paddle].y &&
@@ -53,35 +63,35 @@ export default class {
         GameState.ball.y = GameState.ball.y + GameState.settings.ball.speed.y;
 
         if(this.collisionWithPaddle('left')) {
-            this.reverseBallSpeed();
+            this.reverseBallSpeed().setDeltaSpeedForPaddle('left');
         }
 
         if(this.collisionWithPaddle('right')) {
-            this.reverseBallSpeed();
+            this.reverseBallSpeed().setDeltaSpeedForPaddle('right');
         }
 
         if(GameState.ball.x < GameState.settings.boundaries.left) {
             this.reset();
 
-            GameState.scores.computer++;
+            GameState.players.computer.incrementScore();
         }
 
         if(GameState.ball.x > this.canvas.el.width - GameState.settings.boundaries.right) {
-            // GameState.settings.ball.speed.x = -GameState.settings.ball.speed.x;
-
             this.reset();
 
-
-            GameState.scores.user++;
+            GameState.players.user.incrementScore();
         }
 
         if(GameState.ball.y < GameState.settings.boundaries.top) {
-            GameState.settings.ball.speed.y = -GameState.settings.ball.speed.y;
+            // GameState.settings.ball.speed.y = -GameState.settings.ball.speed.y;
+            this.reverseBallSpeed('y');
 
         }
 
         if(GameState.ball.y > this.canvas.el.height - GameState.settings.boundaries.bottom) {
-            GameState.settings.ball.speed.y = -GameState.settings.ball.speed.y;
+            // GameState.settings.ball.speed.y = -GameState.settings.ball.speed.y;
+            this.reverseBallSpeed('y');
+
         }
     }
 }

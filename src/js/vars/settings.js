@@ -24,5 +24,15 @@ export default {
 
     errors: {
         canvas: 'No canvas element found.'
-    }
+    },
+
+    fontFamily: 'BlinkMacSystemFont,-apple-system,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",Helvetica,Arial,sans-serif',
+
+    fontSize: '18px',
+
+    get font () {
+        return `${this.fontSize} ${this.fontFamily}`;
+    },
+
+    winningScore: 5
 }
